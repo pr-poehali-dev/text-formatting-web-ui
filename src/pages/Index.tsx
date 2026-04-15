@@ -608,6 +608,11 @@ export default function Index() {
                   placeholder="RemoveByKey…"
                   className={`flex-1 min-w-0 py-2 text-xs outline-none bg-transparent ${isDark ? "text-[#e8eaf0] placeholder:text-[#3e4560]" : "text-[#1a1d26] placeholder:text-[#c5c8d0]"}`}
                 />
+                {removeByKey && (
+                  <button onClick={() => setRemoveByKey("")} className={`p-1.5 transition-colors ${isDark ? "text-[#3e4560] hover:text-[#8891a8]" : "text-[#d1d5db] hover:text-[#9ca3af]"}`}>
+                    <Icon name="X" size={10} />
+                  </button>
+                )}
                 <button
                   disabled={!removeByKey}
                   className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-2 text-xs font-medium transition-all ${
@@ -637,6 +642,11 @@ export default function Index() {
                   placeholder="Стало"
                   className={`flex-1 min-w-0 py-2 text-xs outline-none bg-transparent ${isDark ? "text-[#e8eaf0] placeholder:text-[#3e4560]" : "text-[#1a1d26] placeholder:text-[#c5c8d0]"}`}
                 />
+                {(renameFrom || renameTo) && (
+                  <button onClick={() => { setRenameFrom(""); setRenameTo(""); }} className={`p-1.5 transition-colors ${isDark ? "text-[#3e4560] hover:text-[#8891a8]" : "text-[#d1d5db] hover:text-[#9ca3af]"}`}>
+                    <Icon name="X" size={10} />
+                  </button>
+                )}
                 <button
                   disabled={!renameFrom}
                   className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-2 text-xs font-medium transition-all ${
