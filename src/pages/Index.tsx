@@ -262,6 +262,20 @@ export default function Index() {
     setTimeout(() => setCopied(false), 2000);
   }, [output]);
 
+  const handleResetText = useCallback(() => {
+    setInput("");
+    showToast("Текст очищен");
+    inputRef.current?.focus();
+  }, []);
+
+  const handleResetFilters = useCallback(() => {
+    setCaseMode("none");
+    setFindText("");
+    setReplaceText("");
+    setDeletions(new Set());
+    showToast("Фильтры сброшены");
+  }, []);
+
   const handleReset = useCallback(() => {
     setInput("");
     setCaseMode("none");
@@ -410,15 +424,15 @@ export default function Index() {
                 )}
               </div>
               <button
-                onClick={handleReset}
+                onClick={handleResetText}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors ${
                   isDark
                     ? "text-[#6b7280] hover:text-[#e8eaf0] hover:bg-[#1e2230]"
                     : "text-[#9ca3af] hover:text-[#1a1d26] hover:bg-[#f3f4f6]"
                 }`}
               >
-                <Icon name="RotateCcw" size={12} />
-                Сбросить
+                <Icon name="Trash2" size={12} />
+                Очистить
               </button>
             </div>
             <textarea
@@ -481,6 +495,37 @@ export default function Index() {
               }`}
             />
           </div>
+        </div>
+
+        {/* Panels Header */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Icon name="SlidersHorizontal" size={13} className={isDark ? "text-[#4b5265]" : "text-[#9ca3af]"} />
+            <span className={`text-xs font-semibold tracking-widest uppercase ${isDark ? "text-[#4b5265]" : "text-[#9ca3af]"}`}>
+              Настройки
+            </span>
+            {(caseMode !== "none" || findText || deletions.size > 0) && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${isDark ? "bg-[#2a7fff]/15 text-[#2a7fff]" : "bg-[#1d6ef5]/10 text-[#1d6ef5]"}`}>
+                {[caseMode !== "none" ? 1 : 0, findText ? 1 : 0, deletions.size].reduce((a, b) => a + b, 0)} активно
+              </span>
+            )}
+          </div>
+          <button
+            onClick={handleResetFilters}
+            disabled={caseMode === "none" && !findText && deletions.size === 0}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all ${
+              caseMode !== "none" || findText || deletions.size > 0
+                ? isDark
+                  ? "text-[#f87171] hover:bg-[#2a1515] border border-[#f87171]/20"
+                  : "text-[#ef4444] hover:bg-[#fef2f2] border border-[#ef4444]/20"
+                : isDark
+                  ? "text-[#3e4560] border border-transparent cursor-not-allowed"
+                  : "text-[#d1d5db] border border-transparent cursor-not-allowed"
+            }`}
+          >
+            <Icon name="FilterX" size={12} />
+            Сбросить фильтры
+          </button>
         </div>
 
         {/* Panels Grid */}
