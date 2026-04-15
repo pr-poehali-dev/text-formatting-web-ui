@@ -198,11 +198,27 @@ export default function Index() {
   const [renameTo, setRenameTo] = useState("");
   const [copied, setCopied] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const [filterHistory, setFilterHistory] = useState<Array<{ caseMode: "upper" | "lower" | "none"; findText: string; replaceText: string; deletions: Set<string> }>>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(""), 2000);
+  };
+
+  const saveFilterSnapshot = () => {
+    setFilterHistory((prev) => [...prev.slice(-19), { caseMode, findText, replaceText, deletions: new Set(deletions) }]);
+  };
+
+  const undoFilter = () => {
+    if (filterHistory.length === 0) return;
+    const prev = filterHistory[filterHistory.length - 1];
+    setCaseMode(prev.caseMode);
+    setFindText(prev.findText);
+    setReplaceText(prev.replaceText);
+    setDeletions(prev.deletions);
+    setFilterHistory((h) => h.slice(0, -1));
+    showToast("Отменено");
   };
 
   const processText = useCallback(
@@ -252,6 +268,7 @@ export default function Index() {
 
   const doReplace = () => {
     if (!findText) return;
+    saveFilterSnapshot();
     const result = input.split(findText).join(replaceText);
     setInput(result);
     showToast("Замена выполнена");
@@ -290,12 +307,18 @@ export default function Index() {
   }, []);
 
   const toggleDeletion = (id: string) => {
+    saveFilterSnapshot();
     setDeletions((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
+  };
+
+  const changeCaseMode = (val: "upper" | "lower" | "none") => {
+    saveFilterSnapshot();
+    setCaseMode(val);
   };
 
   useEffect(() => {
@@ -513,22 +536,41 @@ export default function Index() {
               </span>
             )}
           </div>
-          <button
-            onClick={handleResetFilters}
-            disabled={caseMode === "none" && !findText && deletions.size === 0}
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all ${
-              caseMode !== "none" || findText || deletions.size > 0
-                ? isDark
-                  ? "text-[#f87171] hover:bg-[#2a1515] border border-[#f87171]/20"
-                  : "text-[#ef4444] hover:bg-[#fef2f2] border border-[#ef4444]/20"
-                : isDark
-                  ? "text-[#3e4560] border border-transparent cursor-not-allowed"
-                  : "text-[#d1d5db] border border-transparent cursor-not-allowed"
-            }`}
-          >
-            <Icon name="FilterX" size={12} />
-            Сбросить фильтры
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={undoFilter}
+              disabled={filterHistory.length === 0}
+              title="Отменить последнее изменение фильтра"
+              className={`flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg transition-all border ${
+                filterHistory.length > 0
+                  ? isDark
+                    ? "text-[#8891a8] hover:bg-[#1a1f2e] border-[#2e3447]"
+                    : "text-[#6b7280] hover:bg-[#f3f4f6] border-[#e5e7eb]"
+                  : isDark
+                    ? "text-[#3e4560] border-transparent cursor-not-allowed"
+                    : "text-[#d1d5db] border-transparent cursor-not-allowed"
+              }`}
+            >
+              <Icon name="Undo2" size={12} />
+              {filterHistory.length > 0 && <span className={`text-[10px] ${isDark ? "text-[#3e4560]" : "text-[#c5c8d0]"}`}>{filterHistory.length}</span>}
+            </button>
+            <button
+              onClick={handleResetFilters}
+              disabled={caseMode === "none" && !findText && deletions.size === 0}
+              className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all ${
+                caseMode !== "none" || findText || deletions.size > 0
+                  ? isDark
+                    ? "text-[#f87171] hover:bg-[#2a1515] border border-[#f87171]/20"
+                    : "text-[#ef4444] hover:bg-[#fef2f2] border border-[#ef4444]/20"
+                  : isDark
+                    ? "text-[#3e4560] border border-transparent cursor-not-allowed"
+                    : "text-[#d1d5db] border border-transparent cursor-not-allowed"
+              }`}
+            >
+              <Icon name="FilterX" size={12} />
+              Сбросить фильтры
+            </button>
+          </div>
         </div>
 
         {/* Panels Grid */}
@@ -555,7 +597,7 @@ export default function Index() {
                       : isDark ? "hover:bg-[#1a1f2e] border-transparent" : "hover:bg-[#f9fafb] border-transparent"
                   }`}
                 >
-                  <input type="radio" name="case" value={opt.value} checked={caseMode === opt.value} onChange={() => setCaseMode(opt.value as typeof caseMode)} className="sr-only" />
+                  <input type="radio" name="case" value={opt.value} checked={caseMode === opt.value} onChange={() => changeCaseMode(opt.value as typeof caseMode)} className="sr-only" />
                   <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${caseMode === opt.value ? "border-[#2a7fff] bg-[#2a7fff]" : isDark ? "border-[#2e3447]" : "border-[#d1d5db]"}`}>
                     {caseMode === opt.value && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                   </div>
