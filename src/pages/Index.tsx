@@ -193,6 +193,9 @@ export default function Index() {
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
   const [deletions, setDeletions] = useState<Set<string>>(new Set());
+  const [removeByKey, setRemoveByKey] = useState("");
+  const [renameFrom, setRenameFrom] = useState("");
+  const [renameTo, setRenameTo] = useState("");
   const [copied, setCopied] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -593,6 +596,59 @@ export default function Index() {
                   <span className="truncate">{item.label}</span>
                 </button>
               ))}
+            </div>
+
+            <div className={`mt-3 pt-3 border-t space-y-2 ${isDark ? "border-[#1e2230]" : "border-[#f0f1f3]"}`}>
+              {/* RemoveByKey */}
+              <div className={`flex items-center gap-1.5 rounded-xl border overflow-hidden ${isDark ? "border-[#2e3447] bg-[#1a1f2e]" : "border-[#e5e7eb] bg-[#f9fafb]"}`}>
+                <span className={`pl-2.5 text-[9px] font-bold tracking-wider whitespace-nowrap ${isDark ? "text-[#3e4560]" : "text-[#c5c8d0]"}`}>KEY</span>
+                <input
+                  value={removeByKey}
+                  onChange={(e) => setRemoveByKey(e.target.value)}
+                  placeholder="RemoveByKey…"
+                  className={`flex-1 min-w-0 py-2 text-xs outline-none bg-transparent ${isDark ? "text-[#e8eaf0] placeholder:text-[#3e4560]" : "text-[#1a1d26] placeholder:text-[#c5c8d0]"}`}
+                />
+                <button
+                  disabled={!removeByKey}
+                  className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-2 text-xs font-medium transition-all ${
+                    removeByKey
+                      ? isDark ? "text-[#22c55e] hover:bg-[#162a1e]" : "text-[#16a34a] hover:bg-[#f0fdf4]"
+                      : isDark ? "text-[#3e4560] cursor-not-allowed" : "text-[#d1d5db] cursor-not-allowed"
+                  }`}
+                >
+                  <Icon name="Scissors" size={11} />
+                  Удалить
+                </button>
+              </div>
+
+              {/* Rename */}
+              <div className={`flex items-center gap-1.5 rounded-xl border overflow-hidden ${isDark ? "border-[#2e3447] bg-[#1a1f2e]" : "border-[#e5e7eb] bg-[#f9fafb]"}`}>
+                <span className={`pl-2.5 text-[9px] font-bold tracking-wider whitespace-nowrap ${isDark ? "text-[#3e4560]" : "text-[#c5c8d0]"}`}>A→B</span>
+                <input
+                  value={renameFrom}
+                  onChange={(e) => setRenameFrom(e.target.value)}
+                  placeholder="Было"
+                  className={`w-[72px] min-w-0 py-2 text-xs outline-none bg-transparent ${isDark ? "text-[#e8eaf0] placeholder:text-[#3e4560]" : "text-[#1a1d26] placeholder:text-[#c5c8d0]"}`}
+                />
+                <Icon name="ArrowRight" size={10} className={isDark ? "text-[#3e4560]" : "text-[#d1d5db]"} />
+                <input
+                  value={renameTo}
+                  onChange={(e) => setRenameTo(e.target.value)}
+                  placeholder="Стало"
+                  className={`flex-1 min-w-0 py-2 text-xs outline-none bg-transparent ${isDark ? "text-[#e8eaf0] placeholder:text-[#3e4560]" : "text-[#1a1d26] placeholder:text-[#c5c8d0]"}`}
+                />
+                <button
+                  disabled={!renameFrom}
+                  className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-2 text-xs font-medium transition-all ${
+                    renameFrom
+                      ? isDark ? "text-[#22c55e] hover:bg-[#162a1e]" : "text-[#16a34a] hover:bg-[#f0fdf4]"
+                      : isDark ? "text-[#3e4560] cursor-not-allowed" : "text-[#d1d5db] cursor-not-allowed"
+                  }`}
+                >
+                  <Icon name="Pencil" size={11} />
+                  Rename
+                </button>
+              </div>
             </div>
           </div>
 
